@@ -1,4 +1,4 @@
-__version__ = "3.8.3"
+__version__ = "3.8.6"
 
 
 import asyncio
@@ -46,7 +46,7 @@ from core.models import (
 )
 from core.thread import ThreadManager
 from core.time import human_timedelta
-from core.utils import human_join, normalize_alias, truncate
+from core.utils import normalize_alias, truncate
 
 logger = getLogger(__name__)
 
@@ -939,6 +939,7 @@ class ModmailBot(commands.Bot):
     async def trigger_auto_triggers(self, message, channel, *, cls=commands.Context):
         message.author = self.modmail_guild.me
         message.channel = channel
+        message.guild = channel.guild
 
         view = StringView(message.content)
         ctx = cls(prefix=self.prefix, view=view, bot=self, message=message)
@@ -967,7 +968,7 @@ class ModmailBot(commands.Bot):
             ctxs = []
             aliases = normalize_alias(alias)
             if not aliases:
-                logger.warning("Alias %s is invalid as called in automove.", invoker)
+                logger.warning("Alias %s is invalid as called in autotrigger.", invoker)
 
             for alias in aliases:
                 view = StringView(invoked_prefix + alias)
@@ -1590,7 +1591,7 @@ def main():
     # check discord version
     if discord.__version__ != "1.6.0":
         logger.error(
-            "Dependencies are not updated, run pipenv install. discord.py version expected 1.6.0, recieved %s",
+            "Dependencies are not updated, run pipenv install. discord.py version expected 1.6.0, received %s",
             discord.__version__,
         )
         sys.exit(0)
